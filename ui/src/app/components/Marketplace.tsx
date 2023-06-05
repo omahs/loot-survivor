@@ -289,7 +289,7 @@ const Marketplace = () => {
             </div>
             <span className="flex flex-row">
               {`Charisma: ${adventurer?.charisma} (+ ${
-                adventurer?.charisma && adventurer?.charisma * 3
+                adventurer?.charisma && adventurer?.charisma * 2
               }`}
               <Coin className="w-5 h-5 fill-current text-terminal-yellow" />{" "}
               {"to bids)"}

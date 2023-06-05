@@ -25,12 +25,12 @@ const PurchaseHealth = ({ isActive, onEscape }: PurchaseHealthProps) => {
 
   let purchaseGoldAmount;
 
-  if (adventurer && adventurer?.level - adventurer?.charisma <= 3) {
-    purchaseGoldAmount = healthAmount * 3;
+  if (adventurer && adventurer?.level - adventurer?.charisma <= 2) {
+    purchaseGoldAmount = healthAmount * 2;
   } else {
     let discount =
       (adventurer && adventurer?.level - adventurer?.charisma) || 0;
-    purchaseGoldAmount = healthAmount * (3 * discount);
+    purchaseGoldAmount = healthAmount * (2 * discount);
   }
 
   const hasBalance =
