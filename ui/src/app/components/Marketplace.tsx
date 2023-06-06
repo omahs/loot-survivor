@@ -34,30 +34,30 @@ const Marketplace = () => {
 
   const currentTime = new Date().getTime();
 
-  useCustomQuery(
-    "unclaimedItemsByAdventurerQuery",
-    getUnclaimedItemsByAdventurer,
-    {
-      bidder: adventurer?.id,
-      status: "Open",
-    },
-    true
-  );
+  // useCustomQuery(
+  //   "unclaimedItemsByAdventurerQuery",
+  //   getUnclaimedItemsByAdventurer,
+  //   {
+  //     bidder: adventurer?.id,
+  //     status: "Open",
+  //   },
+  //   true
+  // );
 
-  const claimExists = () => {
-    return calls.some((call: any) => call.entrypoint == "claim_item");
-  };
+  // const claimExists = () => {
+  //   return calls.some((call: any) => call.entrypoint == "claim_item");
+  // };
 
-  const singleClaimExists = (marketId: number) => {
-    return calls.some(
-      (call: any) =>
-        call.entrypoint == "claim_item" && call.calldata[0] == marketId
-    );
-  };
+  // const singleClaimExists = (marketId: number) => {
+  //   return calls.some(
+  //     (call: any) =>
+  //       call.entrypoint == "claim_item" && call.calldata[0] == marketId
+  //   );
+  // };
 
-  const unclaimedItems = data.unclaimedItemsByAdventurerQuery
-    ? data.unclaimedItemsByAdventurerQuery.items
-    : [];
+  // const unclaimedItems = data.unclaimedItemsByAdventurerQuery
+  //   ? data.unclaimedItemsByAdventurerQuery.items
+  //   : [];
 
   const removeDuplicates = (arr: any) => {
     return arr.reduce((accumulator: any, currentItem: any) => {
@@ -71,48 +71,24 @@ const Marketplace = () => {
   };
 
   const marketLatestItems = data.latestMarketItemsQuery
-    ? removeDuplicates(unclaimedItems.concat(data.latestMarketItemsQuery.items))
+    ? removeDuplicates(data.latestMarketItemsQuery.items)
     : [];
-  const bidders: number[] = [];
+  // const bidders: number[] = [];
 
-  for (const dict of marketLatestItems) {
-    if (dict.bidder && !bidders.includes(dict.bidder)) {
-      bidders.push(dict.bidder);
-    }
-  }
+  // for (const dict of marketLatestItems) {
+  //   if (dict.bidder && !bidders.includes(dict.bidder)) {
+  //     bidders.push(dict.bidder);
+  //   }
+  // }
 
-  useCustomQuery(
-    "adventurersInListQuery",
-    getAdventurersInList,
-    {
-      ids: bidders,
-    },
-    false
-  );
-
-  useCustomQuery(
-    "latestMarketItemsNumberQuery",
-    getLatestMarketItemsNumber,
-    undefined,
-    true
-  );
-
-  const latestMarketItemsNumber = data.latestMarketItemsNumberQuery
-    ? data.latestMarketItemsNumberQuery.market[0]?.itemsNumber
-    : [];
-
-  useCustomQuery(
-    "latestMarketItemsQuery",
-    getLatestMarketItems,
-    {
-      itemsNumber: latestMarketItemsNumber,
-    },
-    true
-  );
-
-  const adventurers = data.adventurersInListQuery
-    ? data.adventurersInListQuery.adventurers
-    : [];
+  // useCustomQuery(
+  //   "adventurersInListQuery",
+  //   getAdventurersInList,
+  //   {
+  //     ids: bidders,
+  //   },
+  //   false
+  // );
 
   const mintDailyItemsTx = {
     contractAddress: lootMarketArcadeContract?.address ?? "",
@@ -121,35 +97,35 @@ const Marketplace = () => {
     metadata: `Minting Loot Items!`,
   };
 
-  const getClaimableItems = () => {
-    return marketLatestItems.filter(
-      (item: any) =>
-        !item.claimedTime &&
-        item.expiry &&
-        convertTime(item.expiry) <= currentTime &&
-        !singleClaimExists(item.marketId) &&
-        adventurer?.id === item.bidder
-    );
-  };
+  // const getClaimableItems = () => {
+  //   return marketLatestItems.filter(
+  //     (item: any) =>
+  //       !item.claimedTime &&
+  //       item.expiry &&
+  //       convertTime(item.expiry) <= currentTime &&
+  //       !singleClaimExists(item.marketId) &&
+  //       adventurer?.id === item.bidder
+  //   );
+  // };
 
-  const handleClaimItem = (item: any) => {
-    if (adventurerContract) {
-      const claimItemTx = {
-        contractAddress: lootMarketArcadeContract?.address ?? "",
-        entrypoint: "claim_item",
-        calldata: [item.marketId, "0", adventurer?.id, "0"],
-        metadata: `Claiming ${item.item}`,
-      };
-      addToCalls(claimItemTx);
-    }
-  };
+  // const handleClaimItem = (item: any) => {
+  //   if (adventurerContract) {
+  //     const claimItemTx = {
+  //       contractAddress: lootMarketArcadeContract?.address ?? "",
+  //       entrypoint: "claim_item",
+  //       calldata: [item.marketId, "0", adventurer?.id, "0"],
+  //       metadata: `Claiming ${item.item}`,
+  //     };
+  //     addToCalls(claimItemTx);
+  //   }
+  // };
 
-  const claimAllItems = () => {
-    const claimableItems = getClaimableItems();
-    claimableItems.forEach((item: any) => {
-      handleClaimItem(item);
-    });
-  };
+  // const claimAllItems = () => {
+  //   const claimableItems = getClaimableItems();
+  //   claimableItems.forEach((item: any) => {
+  //     handleClaimItem(item);
+  //   });
+  // };
 
   const headingToKeyMapping: { [key: string]: string } = {
     "Market Id": "marketId",
@@ -157,14 +133,9 @@ const Marketplace = () => {
     Tier: "rank",
     Slot: "slot",
     Type: "type",
-    Material: "material",
-    Greatness: "greatness",
-    XP: "xp",
     Price: "price",
     Bidder: "bidder",
-    "Bidding Ends": "expiry",
-    Status: "status",
-    "Claimed (UTC)": "claimedTime",
+    Action: "action",
   };
 
   const handleSort = (heading: string) => {
@@ -198,34 +169,34 @@ const Marketplace = () => {
     return sortedItems;
   }, [marketLatestItems, sortField, sortDirection]);
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    switch (event.key) {
-      case "ArrowDown":
-        setSelectedIndex((prev) => {
-          const newIndex = Math.min(prev + 1, itemsCount - 1);
-          return newIndex;
-        });
-        break;
-      case "ArrowUp":
-        setSelectedIndex((prev) => {
-          const newIndex = Math.max(prev - 1, 0);
-          return newIndex;
-        });
-        break;
-      case "Enter":
-        setActiveMenu(selectedIndex);
-        break;
-    }
-  };
+  // const handleKeyDown = (event: KeyboardEvent) => {
+  //   switch (event.key) {
+  //     case "ArrowDown":
+  //       setSelectedIndex((prev) => {
+  //         const newIndex = Math.min(prev + 1, itemsCount - 1);
+  //         return newIndex;
+  //       });
+  //       break;
+  //     case "ArrowUp":
+  //       setSelectedIndex((prev) => {
+  //         const newIndex = Math.max(prev - 1, 0);
+  //         return newIndex;
+  //       });
+  //       break;
+  //     case "Enter":
+  //       setActiveMenu(selectedIndex);
+  //       break;
+  //   }
+  // };
 
-  useEffect(() => {
-    if (!activeMenu) {
-      window.addEventListener("keydown", handleKeyDown);
-      return () => {
-        window.removeEventListener("keydown", handleKeyDown);
-      };
-    }
-  }, [activeMenu]);
+  // useEffect(() => {
+  //   if (!activeMenu) {
+  //     window.addEventListener("keydown", handleKeyDown);
+  //     return () => {
+  //       window.removeEventListener("keydown", handleKeyDown);
+  //     };
+  //   }
+  // }, [activeMenu]);
 
   useEffect(() => {
     if (!activeMenu) {
@@ -245,15 +216,8 @@ const Marketplace = () => {
     "Tier",
     "Slot",
     "Type",
-    "Material",
-    "Greatness",
-    "XP",
     "Price",
-    "Bidder",
-    "Bidding Ends",
-    "Status",
-    "Claimed (UTC)",
-    "Actions",
+    "Action",
   ];
 
   const sum = calls
@@ -266,11 +230,9 @@ const Marketplace = () => {
 
   const currentTimezoneOffsetMinutes = new Date().getTimezoneOffset() * -1;
 
-  const nextMint = data.latestMarketItemsNumberQuery?.market[0]?.timestamp
+  const nextMint = data.latestMarketItemsQuery?.market[0]?.timestamp
     ? new Date(
-        new Date(
-          data.latestMarketItemsNumberQuery?.market[0]?.timestamp
-        ).getTime() +
+        new Date(data.latestMarketItemsQuery?.market[0]?.timestamp).getTime() +
           (3 * 60 + currentTimezoneOffsetMinutes) * 60 * 1000
       )
     : undefined;
@@ -288,12 +250,6 @@ const Marketplace = () => {
                 disabled={nextMint && currentTime < nextMint.getTime()}
               >
                 Mint daily items
-              </Button>
-              <Button
-                onClick={claimAllItems}
-                disabled={claimExists() || getClaimableItems().length == 0}
-              >
-                Claim All
               </Button>
 
               <div className="self-center ml-1">
@@ -316,8 +272,7 @@ const Marketplace = () => {
               {`Charisma: ${adventurer?.charisma} (+ ${
                 adventurer?.charisma && adventurer?.charisma * 3
               }`}
-              <Coin className="w-5 h-5 fill-current text-terminal-yellow" />{" "}
-              {"to bids)"}
+              <Coin className="w-5 h-5 fill-current text-terminal-yellow" />
             </span>
             <UTCClock />
           </div>
@@ -349,7 +304,7 @@ const Marketplace = () => {
                       item={item}
                       index={index}
                       selectedIndex={selectedIndex}
-                      adventurers={adventurers}
+                      // adventurers={adventurers}
                       isActive={activeMenu == index + 1}
                       setActiveMenu={setActiveMenu}
                       calculatedNewGold={calculatedNewGold}
