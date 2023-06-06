@@ -32,8 +32,6 @@ export const ItemDisplay = (item: ItemDisplayProps) => {
       {Item ? (
         <span className="flex flex-row justify-between w-full">
           <div className="w-full overflow-auto whitespace-normal">
-            {" "}
-            {/* Added the CSS classes here */}
             <span className="flex font-semibold whitespace-nowrap">
               {itemName} {Item?.level} {Item?.xp} XP
               {slot == "Neck" || slot == "Ring"
