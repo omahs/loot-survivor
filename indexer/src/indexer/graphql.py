@@ -13,6 +13,8 @@ from indexer.indexer import LootSurvivorIndexer
 from indexer.utils import felt_to_str, str_to_felt, get_key_by_value
 from indexer.config import Config
 
+from indexer.cache import Cache
+
 config = Config()
 
 
@@ -1506,6 +1508,11 @@ def get_market(
 ) -> List[Item]:
     db = info.context["db"]
 
+    cache = Cache(info, where, limit, skip, orderBy)
+
+    if cache.exists is not None:
+        return cache.get_cache()
+
     filter = {"_chain.valid_to": None}
 
     if where:
@@ -1536,7 +1543,12 @@ def get_market(
             break
     query = db["market"].find(filter).skip(skip).limit(limit).sort(sort_var, sort_dir)
 
-    return [Market.from_mongo(t) for t in query]
+    result = [Market.from_mongo(t) for t in query]
+
+    if result:
+        cache.set_cache(result)
+
+    return result
 
 
 @strawberry.type
